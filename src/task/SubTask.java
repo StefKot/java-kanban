@@ -1,26 +1,14 @@
 package task;
 
 public class SubTask extends Task {
-    private final int id;
+    private final Integer epicId;
 
-    public SubTask(String name, String description) {
-        this.name = name;
-        this.description = description;
-        this.status = Status.NEW;
-        this.id = Task.counter;
-        Task.counter++;
+    public SubTask(String name, String description, Integer epicId) {
+        super(name, description);
+        this.epicId = epicId;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void changeStatus(Status status) {
-        this.status = status;
-    }
-
-    public void changeName(SubTask subTask) {
-        this.name = subTask.name;
-        this.description = subTask.description;
+    public int getEpicId() {
+        return epicId;
     }
 }
