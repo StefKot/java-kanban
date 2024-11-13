@@ -34,8 +34,8 @@ public class Task {
         return id;
     }
 
-    public int setId(int id) {
-        return id;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Status getStatus() {
