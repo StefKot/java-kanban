@@ -134,45 +134,35 @@ public class TaskManager {
     }
 
     public Task getTask(int id) {
-        if (!tasks.containsKey(id)) {
-            return null;
-        }
         return tasks.get(id);
     }
 
     public Epic getEpic(int id) {
-        if (!epics.containsKey(id)) {
-            return null;
-        }
-        return epics.get(id);
+        return epics.getOrDefault(id, null);
     }
 
     public SubTask getSubTask(int id) {
-        if (!subtasks.containsKey(id)) {
-            return null;
-        }
-        return subtasks.get(id);
+        return subtasks.getOrDefault(id, null);
     }
 
     public ArrayList<SubTask> getEpicSubTasks(int epicId) {
-        ArrayList<SubTask> getSubtasks = new ArrayList<>();
-        for (Epic epic : epics.values()) {
-            if (epicId == epic.getId()) {
-                for (Integer id : epic.getSubtaskIds()) {
-                    if (subtasks.containsKey(id)) {
-                        getSubtasks.add(subtasks.get(id));
-                    }
+        Epic epic = epics.get(epicId);
+        ArrayList<SubTask> subTasksList = new ArrayList<>();
+
+        if (epic != null) {
+            for (int subtaskId : epic.getSubtaskIds()) {
+                SubTask subTask = subtasks.get(subtaskId);
+                if (subTask != null) {
+                    subTasksList.add(subTask);
                 }
             }
         }
-        return getSubtasks;
+
+        return subTasksList;
     }
 
     public Epic getEpicForSubTask(int id) {
-        if (!subtasks.containsKey(id)) {
-            return null;
-        }
-        return epics.get(subtasks.get(id).getEpicId());
+        return subtasks.containsKey(id) ? epics.get(subtasks.get(id).getEpicId()) : null;
     }
 
     private void updateEpicStatus(int epicId) {
