@@ -46,13 +46,13 @@ public class Main {
         taskManager.getEpicForSubTask(subtask1.getId());
 
         // Удаление задач и эпиков
-        taskManager.deleteEpicTask(epic2.getId());
+        taskManager.deleteEpic(epic2.getId());
         taskManager.deleteSubTask(subtask2.getId());
         taskManager.deleteTask(task2.getId());
 
         // Обновление задач и эпиков
         taskManager.updateTask(task1);
-        taskManager.updateEpicTask(epic1);
+        taskManager.updateEpic(epic1);
         taskManager.updateSubTask(subtask1);
 
         // Удаление всех задач, эпиков и подзадач
