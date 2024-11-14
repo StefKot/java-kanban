@@ -33,7 +33,7 @@ public class TaskManager {
         int epicId = subTask.getEpicId();
         Epic epic = epics.get(epicId);
         if (epic == null) {
-            return null;
+            return -1;
         }
         int id = ++idGenerator;
         subTask.setId(id);
@@ -49,57 +49,57 @@ public class TaskManager {
 
     public void deleteEpic(int id) {
         Epic epic = epics.remove(id);
-        if (epic == null) {
-            return;
-        }
-        for (Integer subtaskId : epic.getSubtaskIds()) {
-            subtasks.remove(subtaskId);
-        }
-    }
-
-    public void deleteSubTask(int subtaskId) {
-        for (Epic epic : epics.values()) {
-            for (Integer id : epic.getSubtaskIds()) {
-                if (id == subtaskId) {
-                    epic.removeSubtaskIds(id);
-                    subtasks.remove(id);
-                    updateEpicStatus(epic.getId());
-                }
+        if (epic != null) {
+            for (Integer subtaskId : epic.getSubtaskIds()) {
+                subtasks.remove(subtaskId);
             }
         }
     }
 
+    public void deleteSubTask(int subtaskId) {
+        SubTask subTask = subtasks.get(subtaskId);
+
+        if (subTask != null) {
+            int epicId = subTask.getEpicId();
+            Epic epic = epics.get(epicId);
+
+            if (epic != null) {
+                epic.removeSubtaskIds(subtaskId);
+                subtasks.remove(subtaskId);
+                updateEpicStatus(epicId);
+            }
+        }
+    }
+
+
     public void updateTask(Task task) {
         int id = task.getId();
         Task savedTask = tasks.get(id);
-        if (savedTask == null) {
-            return;
+        if (savedTask != null) {
+            tasks.put(id, task);
         }
-        tasks.put(id, task);
     }
 
     public void updateEpic(Epic epic) {
         Epic savedEpic = epics.get(epic.getId());
-        if (savedEpic == null) {
-            return;
+        if (savedEpic != null) {
+            savedEpic.setName(epic.getName());
+            savedEpic.setDescription(epic.getDescription());
         }
-        savedEpic.setName(epic.getName());
-        savedEpic.setDescription(epic.getDescription());
     }
 
     public void updateSubTask(SubTask subTask) {
         int id = subTask.getId();
         int epicId = subTask.getEpicId();
         SubTask savedSubtask = subtasks.get(id);
-        if (savedSubtask == null) {
-            return;
+
+        if (savedSubtask != null && savedSubtask.getEpicId() == epicId) {
+            Epic epic = epics.get(epicId);
+            if (epic != null) {
+                subtasks.put(id, subTask);
+                updateEpicStatus(epicId);
+            }
         }
-        Epic epic = epics.get(epicId);
-        if (epic == null) {
-            return;
-        }
-        subtasks.put(id, subTask);
-        updateEpicStatus(epicId);
     }
 
     public void deleteTasks() {
@@ -136,11 +136,11 @@ public class TaskManager {
     }
 
     public Epic getEpic(int id) {
-        return epics.getOrDefault(id, null);
+        return epics.get(id);
     }
 
     public SubTask getSubTask(int id) {
-        return subtasks.getOrDefault(id, null);
+        return subtasks.get(id);
     }
 
     public ArrayList<SubTask> getEpicSubTasks(int epicId) {

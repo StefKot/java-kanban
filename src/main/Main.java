@@ -2,6 +2,7 @@ package main;
 
 
 import manager.TaskManager;
+import task.Status;
 import task.Epic;
 import task.Task;
 import task.SubTask;
@@ -17,19 +18,19 @@ public class Main {
         Epic epic2 = new Epic("EpicName2", "EpicDescription2");
         taskManager.addNewEpic(epic2);
 
-        Task task1 = new Task("TaskName1", "TaskDescription1");
+        Task task1 = new Task("TaskName1", "TaskDescription1", Status.NEW);
         taskManager.addNewTask(task1);
 
-        Task task2 = new Task("TaskName2", "TaskDescription2");
+        Task task2 = new Task("TaskName2", "TaskDescription2", Status.IN_PROGRESS);
         taskManager.addNewTask(task2);
 
-        SubTask subtask1 = new SubTask("SubTaskName1", "SubTaskDescription1", epic1.getId());
+        SubTask subtask1 = new SubTask("SubTaskName1", "SubTaskDescription1", Status.NEW, epic1.getId());
         taskManager.addNewSubTask(subtask1);
 
-        SubTask subtask2 = new SubTask("SubTaskName2", "SubTaskDescription2", epic1.getId());
+        SubTask subtask2 = new SubTask("SubTaskName2", "SubTaskDescription2", Status.IN_PROGRESS, epic1.getId());
         taskManager.addNewSubTask(subtask2);
 
-        SubTask subtask3 = new SubTask("SubTaskName3", "SubTaskDescription3", epic1.getId());
+        SubTask subtask3 = new SubTask("SubTaskName3", "SubTaskDescription3", Status.DONE, epic1.getId());
         taskManager.addNewSubTask(subtask3);
 
         // Получение задач, подзадач и эпиков
