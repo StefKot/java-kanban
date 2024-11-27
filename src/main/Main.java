@@ -1,7 +1,7 @@
 package main;
 
 
-import manager.TaskManager;
+import manager.InMemoryTaskManager;
 import task.Status;
 import task.Epic;
 import task.Task;
@@ -10,7 +10,7 @@ import task.SubTask;
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager taskManager = new TaskManager();
+/*        InMemoryTaskManager taskManager = new InMemoryTaskManager();
 
         Epic epic1 = new Epic("EpicName1", "EpicDescription1");
         taskManager.addNewEpic(epic1);
@@ -44,7 +44,6 @@ public class Main {
         taskManager.getEpic(epic1.getId());
         taskManager.getTask(task1.getId());
         taskManager.getSubTask(subtask1.getId());
-        taskManager.getEpicForSubTask(subtask1.getId());
 
         // Удаление задач и эпиков
         taskManager.deleteEpic(epic2.getId());
@@ -59,6 +58,6 @@ public class Main {
         // Удаление всех задач, эпиков и подзадач
         taskManager.deleteTasks();
         taskManager.deleteEpics();
-        taskManager.deleteSubtasks();
+        taskManager.deleteSubTasks();*/
     }
 }
