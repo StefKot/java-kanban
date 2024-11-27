@@ -1,27 +1,32 @@
 package task;
 
+import java.util.List;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subtaskIds = new ArrayList<>();
+    private List<Integer> subTaskIds = new ArrayList<>();
 
     public Epic(String name, String description) {
         super(name, description, Status.NEW);
     }
 
-    public void addSubtaskId(Integer id) {
-        subtaskIds.add(id);
+    public void addSubTaskId(Integer id) {
+        subTaskIds.add(id);
     }
 
-    public ArrayList<Integer> getSubtaskIds() {
-        return new ArrayList<>(subtaskIds);
+    public List<Integer> getSubTaskIds() {
+        return new ArrayList<>(subTaskIds);
     }
 
-    public void removeSubtaskIds(Integer id) {
-        subtaskIds.remove(id);
+    public void removeSubTaskIds(Integer id) {
+        subTaskIds.remove(id);
     }
 
-    public void cleanSubtaskIds() {
-        subtaskIds.clear();
+    public void clearSubTaskIds() {
+        subTaskIds.clear();
+    }
+    // обновляю список задач
+    public void setAllSubTask(List<Integer> subTasks) {
+        subTaskIds = subTasks;
     }
 }
