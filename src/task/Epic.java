@@ -25,6 +25,7 @@ public class Epic extends Task {
     public void clearSubTaskIds() {
         subTaskIds.clear();
     }
+
     // обновляю список задач
     public void setAllSubTask(List<Integer> subTasks) {
         subTaskIds = subTasks;
