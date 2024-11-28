@@ -82,17 +82,16 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) {
-        int id = task.getId();
-        Task savedTask = tasks.get(id);
+    public void updateTask(Task task, int id) {
+        final Task savedTask = tasks.get(id);
         if (savedTask != null) {
             tasks.put(id, task);
         }
     }
 
     @Override
-    public void updateEpic(Epic epic) {
-        Epic savedEpic = epics.get(epic.getId());
+    public void updateEpic(Epic epic, int id) {
+        final Epic savedEpic = epics.get(id);
         if (savedEpic != null) {
             savedEpic.setName(epic.getName());
             savedEpic.setDescription(epic.getDescription());
@@ -100,10 +99,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubTask(SubTask subTask) {
-        int id = subTask.getId();
+    public void updateSubTask(SubTask subTask, int id) {
         int epicId = subTask.getEpicId();
-        SubTask savedSubTask = subTasks.get(id);
+        final SubTask savedSubTask = subTasks.get(id);
 
         if (savedSubTask != null && savedSubTask.getEpicId() == epicId) {
             Epic epic = epics.get(epicId);
