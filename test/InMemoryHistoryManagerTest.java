@@ -7,31 +7,13 @@ import task.SubTask;
 import task.Status;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
 public class InMemoryHistoryManagerTest {
-    private InMemoryTaskManager taskManager;
-    private Task task1;
-    private Epic epic1;
-    private SubTask subtask1;
-
-    @BeforeEach
-    public void createTaskManagerTasksEpicsSubTasks() {
-
-
-        Task task1 = new Task("Погулять с собакой", "Погулять с собакой утром", Status.NEW);
-        taskManager.addNewTask(task1);
-
-        Epic epic1 = new Epic("Переезд", "Дела для переезда в новую квартиру");
-        taskManager.addNewEpic(epic1);
-
-        SubTask subtask1 = new SubTask("Собрать коробки", "Все вещи должны быть в коробках", Status.NEW,
-                epic1.getId());
-        taskManager.addNewSubTask(subtask1);
-    }
+    InMemoryTaskManager taskManager = new InMemoryTaskManager();
 
     @Test
     public void getHistoryShouldReturnListOf10Tasks() {
@@ -45,13 +27,17 @@ public class InMemoryHistoryManagerTest {
         }
 
         List<Task> list = taskManager.getHistory();
+        System.out.println(list);
         assertEquals(10, list.size(), "Неверное количество задач.");
     }
 
     @Test
     public void getHistoryShouldReturnOldTaskAfterUpdate() {
+        Task task1 = new Task("Погулять с собакой", "Погулять с собакой утром", Status.NEW);
+        taskManager.addNewTask(task1);
         taskManager.getTask(task1.getId());
-        taskManager.updateTask(new Task("Упаковать кошку", "Поместить кошку в сумку-переноску", Status.NEW), task1.getId());
+        taskManager.updateTask(new Task("Упаковать кошку", "Поместить кошку в сумку-переноску", Status.NEW),
+                task1.getId());
         List<Task> tasks = taskManager.getHistory();
         Task oldTask = tasks.getFirst();
         assertEquals(task1.getName(), oldTask.getName(), "Старая версия Task не сохранилась.");
@@ -62,6 +48,8 @@ public class InMemoryHistoryManagerTest {
 
     @Test
     public void getHistoryShouldReturnOldEpicAfterUpdate() {
+        Epic epic1 = new Epic("Переезд", "Дела для переезда в новую квартиру");
+        taskManager.addNewEpic(epic1);
         taskManager.getEpic(epic1.getId());
         taskManager.updateEpic(new Epic("Новое имя", "Новое описание"), epic1.getId());
         List<Task> epics = taskManager.getHistory();
@@ -74,14 +62,17 @@ public class InMemoryHistoryManagerTest {
 
     @Test
     public void getHistoryShouldReturnOldSubtaskAfterUpdate() {
+        Epic epic1 = new Epic("Переезд", "Дела для переезда в новую квартиру");
+        taskManager.addNewEpic(epic1);
+        SubTask subtask1 = new SubTask("Собрать коробки", "Все вещи должны быть в коробках", Status.NEW,
+                epic1.getId());
+        taskManager.addNewSubTask(subtask1);
         taskManager.getSubTask(subtask1.getId());
         taskManager.updateSubTask(new SubTask("Новое имя", "Новое описание",
                 Status.NEW, epic1.getId()), subtask1.getId());
         List<Task> subtasks = taskManager.getHistory();
         SubTask oldSubtask = (SubTask) subtasks.getFirst();
-        assertEquals(subtask1.getName(), oldSubtask.getName(),
-                "Старая версия Epic не сохранилась.");
-        assertEquals(subtask1.getDescription(), oldSubtask.getDescription(),
-                "Старая версия Epic не сохранилась.");
+        assertEquals(subtask1.getName(), oldSubtask.getName(), "Старая версия Epic не сохранилась.");
+        assertEquals(subtask1.getDescription(), oldSubtask.getDescription(), "Старая версия Epic не сохранилась.");
     }
 }
