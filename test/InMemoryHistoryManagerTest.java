@@ -27,7 +27,6 @@ public class InMemoryHistoryManagerTest {
         }
 
         List<Task> list = taskManager.getHistory();
-        System.out.println(list);
         assertEquals(10, list.size(), "Неверное количество задач.");
     }
 
