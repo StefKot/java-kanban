@@ -37,7 +37,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         removeNode(node);
     }
 
-    public ArrayList<Task> fetchHistory() {
+    private ArrayList<Task> fetchHistory() {
         Node element = head;
         ArrayList<Task> taskHistory = new ArrayList<>();
         while (element != null) {
