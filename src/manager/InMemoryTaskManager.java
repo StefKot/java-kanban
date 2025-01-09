@@ -1,26 +1,26 @@
 package manager;
 
-import task.Status;
 import task.Epic;
+import task.Status;
 import task.SubTask;
 import task.Task;
 
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final Map<Integer, Task> tasks = new HashMap<>();
-    private final Map<Integer, Epic> epics = new HashMap<>();
-    private final Map<Integer, SubTask> subTasks = new HashMap<>();
+    protected final Map<Integer, Task> tasks = new HashMap<>();
+    protected final Map<Integer, Epic> epics = new HashMap<>();
+    protected final Map<Integer, SubTask> subTasks = new HashMap<>();
 
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
-    private int idGenerator = 0;
+    protected int idGenerator = 0;
 
     @Override
-    public int addNewTask(Task task) {
+    public Integer addNewTask(Task task) {
         int id = ++idGenerator;
         task.setId(id);
         tasks.put(id, task);
