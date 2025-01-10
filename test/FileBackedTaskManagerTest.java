@@ -88,8 +88,8 @@ class FileBackedTaskManagerTest {
 
     @Test
     void shouldLoadTasksFromFile() throws IOException {
-        // Запишем задачи в файл вручную
         tempFile = File.createTempFile("tmp", ".csv");
+        writeToFile(FileBackedTaskManager.HEADER);
         writeToFile("1,TASK,Task 1,NEW,Description Task 1");
         writeToFile("2,EPIC,Epic  1,NEW,Description Epic 1");
         writeToFile("3,SUBTASK,SubTask 1,IN_PROGRESS,Description SubTask 1,2");
