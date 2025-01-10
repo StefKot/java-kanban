@@ -7,7 +7,7 @@ import task.Task;
 import java.util.List;
 
 public interface TaskManager {
-    int addNewTask(Task task);
+    Integer addNewTask(Task task);
 
     Integer addNewEpic(Epic epic);
 

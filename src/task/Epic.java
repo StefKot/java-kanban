@@ -10,6 +10,10 @@ public class Epic extends Task {
         super(name, description, Status.NEW);
     }
 
+    public Epic(String name, String description, Integer id, Status status) {
+        super(name, description, id, status);
+    }
+
     public void addSubTaskId(Integer id) {
         subTaskIds.add(id);
     }
@@ -26,7 +30,12 @@ public class Epic extends Task {
         subTaskIds.clear();
     }
 
+    @Override
+    public TaskTypes getType() {
+        return TaskTypes.EPIC;
+    }
+
     public void setAllSubTask(List<Integer> subTasks) {
-        subTaskIds = subTasks;
+        this.subTaskIds = new ArrayList<>(subTasks);
     }
 }
