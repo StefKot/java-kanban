@@ -10,6 +10,7 @@ import task.Task;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void shouldAddAndSaveTaskToFile() throws IOException {
-        Task task = new Task("Task 1", "Description Task 1", Status.NEW);
+        Task task = new Task("Task 1", "Description Task 1", Status.NEW, LocalDateTime.now().plusMinutes(15));
         manager.addNewTask(task);
 
         String expectedContent = "1,TASK,Task 1,NEW,Description Task 1";
@@ -57,7 +58,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void shouldAddAndSaveEpicToFile() throws IOException {
-        Epic epic = new Epic("Epic  1", "Description Epic 1");
+        Epic epic = new Epic("Epic  1", "Description Epic 1", Status.NEW);
         manager.addNewEpic(epic);
 
         String expectedContent = "1,EPIC,Epic  1,NEW,Description Epic 1";
@@ -71,12 +72,12 @@ class FileBackedTaskManagerTest {
 
     @Test
     void shouldAddAndSaveSubtaskToFile() throws IOException {
-        Epic epic = new Epic("Epic  1", "Description Epic 1");
+        Epic epic = new Epic("Epic  1", "Description Epic 1", Status.NEW);
         manager.addNewEpic(epic);
 
-        SubTask subtask = new SubTask("SubTask 1", "Description SubTask 1", Status.NEW, 1);
-        subtask.setStatus(Status.IN_PROGRESS);
-        manager.addNewSubTask(subtask);
+        SubTask subTask = new SubTask("SubTask 1", "Description SubTask 1", Status.NEW, 1, LocalDateTime.now().plusMinutes(15));
+        subTask.setStatus(Status.IN_PROGRESS);
+        manager.addNewSubTask(subTask);
 
         String expectedContent = "2,SUBTASK,SubTask 1,IN_PROGRESS,Description SubTask 1,1";
         for (String line : readFileLines()) {
@@ -90,38 +91,44 @@ class FileBackedTaskManagerTest {
     void shouldLoadTasksFromFile() throws IOException {
         tempFile = File.createTempFile("tmp", ".csv");
         writeToFile(FileBackedTaskManager.HEADER);
-        writeToFile("1,TASK,Task 1,NEW,Description Task 1");
-        writeToFile("2,EPIC,Epic  1,NEW,Description Epic 1");
-        writeToFile("3,SUBTASK,SubTask 1,IN_PROGRESS,Description SubTask 1,2");
+        writeToFile("1,TASK,Task 1,NEW,Description Task 1,2025-09-03T11:11:11,230");
+        writeToFile("2,EPIC,Epic  1,NEW,Description Epic 1,2023-07-10T11:11:11,111");
+        writeToFile("3,SUBTASK,SubTask 1,IN_PROGRESS,Description SubTask 1,2,2003-07-10T11:11:11,333");
 
         manager = FileBackedTaskManager.loadFromFile(tempFile);
 
         List<Task> tasks = manager.getTasks();
         List<Epic> epics = manager.getEpics();
-        List<SubTask> subtasks = manager.getSubTasks();
+        List<SubTask> subTasks = manager.getSubTasks();
 
         assertEquals(1, tasks.size());
         assertEquals(1, epics.size());
-        assertEquals(1, subtasks.size());
+        assertEquals(1, subTasks.size());
 
         Task loadedTask = tasks.getFirst();
         assertEquals(1, loadedTask.getId());
         assertEquals("Task 1", loadedTask.getName());
         assertEquals(Status.NEW, loadedTask.getStatus());
         assertEquals("Description Task 1", loadedTask.getDescription());
+        assertEquals(LocalDateTime.parse("2025-09-03T11:11:11"), loadedTask.getStartTime());
+        assertEquals(230, loadedTask.getDuration().toMinutes());
 
         Epic loadedEpic = epics.getFirst();
         assertEquals(2, loadedEpic.getId());
         assertEquals("Epic  1", loadedEpic.getName());
         assertEquals(Status.NEW, loadedEpic.getStatus());
         assertEquals("Description Epic 1", loadedEpic.getDescription());
+        assertEquals(LocalDateTime.parse("2023-07-10T11:11:11"), loadedEpic.getStartTime());
+        assertEquals(111, loadedEpic.getDuration().toMinutes());
 
-        SubTask loadedSubTask = subtasks.getFirst();
+        SubTask loadedSubTask = subTasks.getFirst();
         assertEquals(3, loadedSubTask.getId());
         assertEquals("SubTask 1", loadedSubTask.getName());
         assertEquals(Status.IN_PROGRESS, loadedSubTask.getStatus());
         assertEquals("Description SubTask 1", loadedSubTask.getDescription());
         assertEquals(2, loadedSubTask.getEpicId());
+        assertEquals(LocalDateTime.parse("2003-07-10T11:11:11"), loadedSubTask.getStartTime());
+        assertEquals(333, loadedSubTask.getDuration().toMinutes());
     }
 
     private List<String> readFileLines() throws IOException {
