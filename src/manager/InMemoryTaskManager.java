@@ -128,10 +128,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateEpic(Epic epic, int id) {
         final Epic savedEpic = epics.get(id);
         if (savedEpic != null) {
-            if (checkIntersections(epic)) {
-                throw new IntersectionException("An intersection in time has been found: " + epic.getStartTime());
-            }
-
             savedEpic.setName(epic.getName());
             savedEpic.setDescription(epic.getDescription());
         }
