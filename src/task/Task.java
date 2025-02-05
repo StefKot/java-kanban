@@ -19,13 +19,6 @@ public class Task {
         this.status = status;
     }
 
-    public Task(String name, String description, Status status, LocalDateTime startTime) {
-        this.name = name;
-        this.description = description;
-        this.status = status;
-        this.startTime = startTime;
-    }
-
     public Task(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
         this.name = name;
         this.description = description;
@@ -39,14 +32,6 @@ public class Task {
         this.description = description;
         this.id = id;
         this.status = status;
-    }
-
-    public Task(String name, String description, Integer id, Status status, LocalDateTime startTime) {
-        this.name = name;
-        this.description = description;
-        this.id = id;
-        this.status = status;
-        this.startTime = startTime;
     }
 
     public Task(String name, String description, Integer id, Status status, LocalDateTime startTime, Duration duration) {
