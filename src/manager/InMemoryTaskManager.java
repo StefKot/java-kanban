@@ -24,12 +24,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Integer addNewTask(Task task) {
+        int id = ++idGenerator;
+        task.setId(id);
+
         if (checkIntersections(task)) {
             throw new IntersectionException("An intersection in time has been found: " + task.getStartTime());
         }
 
-        int id = ++idGenerator;
-        task.setId(id);
         tasks.put(id, task);
         addPriorityTask(task);
         return id;
@@ -52,12 +53,12 @@ public class InMemoryTaskManager implements TaskManager {
             return null;
         }
 
-        int id = ++idGenerator;
-        subTask.setId(id);
-
         if (checkIntersections(subTask)) {
             throw new IntersectionException("An intersection in time has been found: " + subTask.getStartTime());
         }
+
+        int id = ++idGenerator;
+        subTask.setId(id);
 
         subTasks.put(id, subTask);
         epic.addSubTaskId(subTask.getId());
@@ -111,8 +112,10 @@ public class InMemoryTaskManager implements TaskManager {
         final Task savedTask = tasks.get(id);
         if (savedTask != null) {
             task.setId(id);
-            task.setStatus(savedTask.getStatus());
-            task.setStartTime(savedTask.getStartTime());
+
+            if (checkIntersections(task)) {
+                throw new IntersectionException("An intersection in time has been found: " + task.getStartTime());
+            }
 
             priorityTasks.remove(savedTask);
             addPriorityTask(task);
@@ -125,12 +128,12 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateEpic(Epic epic, int id) {
         final Epic savedEpic = epics.get(id);
         if (savedEpic != null) {
+            if (checkIntersections(epic)) {
+                throw new IntersectionException("An intersection in time has been found: " + epic.getStartTime());
+            }
+
             savedEpic.setName(epic.getName());
             savedEpic.setDescription(epic.getDescription());
-            savedEpic.setAllSubTask(epic.getSubTaskIds());
-
-            changeEpicTime(savedEpic);
-            epics.put(id, savedEpic);
         }
     }
 
@@ -143,9 +146,11 @@ public class InMemoryTaskManager implements TaskManager {
             Epic epic = epics.get(epicId);
 
             if (epic != null && subTask.getEpicId() == epicId) {
+                if (checkIntersections(subTask)) {
+                    throw new IntersectionException("An intersection in time has been found for subtask: " + subTask.getStartTime());
+                }
+
                 subTask.setId(id);
-                subTask.setStatus(savedSubTask.getStatus());
-                subTask.setStartTime(savedSubTask.getStartTime());
 
                 priorityTasks.remove(savedSubTask);
                 addPriorityTask(subTask);
@@ -181,13 +186,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteSubTasks() {
-        for (Integer subTask : subTasks.keySet()) {
-            historyManager.removeFromHistory(subTask);
-            priorityTasks.remove(subTasks.get(subTask));
+        for (Integer subTaskId : subTasks.keySet()) {
+            historyManager.removeFromHistory(subTaskId);
+            priorityTasks.remove(subTasks.get(subTaskId));
         }
+
         for (Epic epic : epics.values()) {
             epic.clearSubTaskIds();
             updateEpicStatus(epic.getId());
+            changeEpicTime(epic);
         }
         subTasks.clear();
     }
@@ -286,23 +293,42 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected void changeEpicTime(Epic epic) {
         if (epic.getSubTaskIds().isEmpty()) {
-            epic.setDuration(Duration.ofMinutes(0));
             epic.setStartTime(null);
             epic.setEndTime(null);
+            epic.setDuration(Duration.ZERO);
             return;
         }
-        epic.setStartTime(subTasks.get(epic.getSubTaskIds().getFirst()).getStartTime());
-        epic.setEndTime(subTasks.get(epic.getSubTaskIds().getFirst()).getEndTime());
-        Duration epicDuration = Duration.ofMinutes(0);
+
+        LocalDateTime startTime = null;
+        LocalDateTime endTime = null;
+        Duration epicDuration = Duration.ZERO;
+
         for (Integer id : epic.getSubTaskIds()) {
-            if (epic.getStartTime().isAfter(subTasks.get(id).getStartTime())) {
-                epic.setStartTime(subTasks.get(id).getStartTime());
+            SubTask subTask = subTasks.get(id);
+            if (subTask == null) {
+                continue;
             }
-            if (epic.getEndTime().isBefore((subTasks.get(id).getEndTime()))) {
-                epic.setEndTime(subTasks.get(id).getEndTime());
+
+            LocalDateTime subTaskStartTime = subTask.getStartTime();
+            LocalDateTime subTaskEndTime = subTask.getEndTime();
+
+            if (subTaskStartTime != null) {
+                if (startTime == null || subTaskStartTime.isBefore(startTime)) {
+                    startTime = subTaskStartTime;
+                }
             }
-            epicDuration = epicDuration.plus(subTasks.get(id).getDuration());
+
+            if (subTaskEndTime != null) {
+                if (endTime == null || subTaskEndTime.isAfter(endTime)) {
+                    endTime = subTaskEndTime;
+                }
+            }
+
+            epicDuration = epicDuration.plus(subTask.getDuration());
         }
+
+        epic.setStartTime(startTime);
+        epic.setEndTime(endTime);
         epic.setDuration(epicDuration);
     }
 
@@ -315,7 +341,7 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime endTime = task.getEndTime();
 
         return priorityTasks.stream()
-                .filter(otherTask -> otherTask.getStartTime() != null && !otherTask.equals(task))
+                .filter(otherTask -> otherTask.getStartTime() != null && otherTask.getId() != task.getId())
                 .anyMatch(otherTask -> startTime.isBefore(otherTask.getEndTime()) && endTime.isAfter(otherTask.getStartTime()));
     }
 

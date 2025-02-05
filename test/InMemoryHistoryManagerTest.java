@@ -5,6 +5,7 @@ import task.Status;
 import task.SubTask;
 import task.Task;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class InMemoryHistoryManagerTest {
     @Test
     public void getHistoryShouldReturnListOf10Tasks() {
         for (int i = 0; i < 10; i++) {
-            taskManager.addNewTask(new Task("Name", "Description", Status.NEW, LocalDateTime.now().plusMinutes(i)));
+            taskManager.addNewTask(new Task("Name", "Description", Status.NEW, LocalDateTime.now().plusMinutes(i), Duration.ZERO));
         }
 
         List<Task> tasks = taskManager.getTasks();
@@ -30,12 +31,12 @@ public class InMemoryHistoryManagerTest {
 
     @Test
     public void getHistoryShouldReturnOldTaskAfterUpdate() {
-        Task task1 = new Task("Walk the dog", "Walk the dog in the morning", Status.NEW, LocalDateTime.now().plusMinutes(15));
+        Task task1 = new Task("Walk the dog", "Walk the dog in the morning", Status.NEW, LocalDateTime.now().plusMinutes(15), Duration.ZERO);
         taskManager.addNewTask(task1);
         taskManager.getTask(task1.getId());
-        taskManager.updateTask(new Task("Pack up the cat", "Place the cat in a carrier bag", Status.NEW, LocalDateTime.now().plusMinutes(25)),
+        taskManager.updateTask(new Task("Pack up the cat", "Place the cat in a carrier bag", Status.NEW, LocalDateTime.now().plusMinutes(25), Duration.ZERO),
                 task1.getId());
-        Task task2 = new Task("New Task with time", "New Task with time", Status.NEW, LocalDateTime.now().plusMinutes(15));
+        Task task2 = new Task("New Task with time", "New Task with time", Status.NEW, LocalDateTime.now().plusMinutes(15), Duration.ZERO);
         task2.setId(task1.getId());
         taskManager.updateTask(task2, task2.getId());
         List<Task> tasks = taskManager.getHistory();
@@ -64,15 +65,15 @@ public class InMemoryHistoryManagerTest {
     public void getHistoryShouldReturnOldSubtaskAfterUpdate() {
         Epic epic1 = new Epic("Move", "Things to do for moving to a new apartment", Status.NEW);
         taskManager.addNewEpic(epic1);
-        SubTask subTask1 = new SubTask("Assemble the boxes", "All items must be in boxes.", Status.NEW,
-                epic1.getId(), LocalDateTime.now().plusMinutes(15));
+        SubTask subTask1 = new SubTask("Assemble the boxes", "All items must be in boxes.", 1, Status.NEW,
+                epic1.getId(), LocalDateTime.now().plusMinutes(15), Duration.ZERO);
         taskManager.addNewSubTask(subTask1);
         taskManager.getSubTask(subTask1.getId());
-        SubTask subTask2 = new SubTask("New name", "New Description", Status.NEW,
-                epic1.getId(), LocalDateTime.now().plusMinutes(25));
+        SubTask subTask2 = new SubTask("New name", "New Description", 2, Status.NEW,
+                epic1.getId(), LocalDateTime.now().plusMinutes(25), Duration.ZERO);
         subTask2.setId(subTask1.getId());
-        taskManager.updateSubTask(new SubTask("New name", "New Description",
-                Status.NEW, epic1.getId()), subTask2.getId());
+        taskManager.updateSubTask(new SubTask("New name", "New Description", 1,
+                Status.NEW, epic1.getId(), LocalDateTime.now().plusMinutes(25), Duration.ZERO), subTask2.getId());
         List<Task> subTasks = taskManager.getHistory();
         SubTask oldSubtask = (SubTask) subTasks.getFirst();
         assertEquals(subTask1.getName(), oldSubtask.getName(), "The old version of SubTask has not been saved.");

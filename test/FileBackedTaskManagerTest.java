@@ -10,6 +10,7 @@ import task.Task;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void shouldAddAndSaveTaskToFile() throws IOException {
-        Task task = new Task("Task 1", "Description Task 1", Status.NEW, LocalDateTime.now().plusMinutes(15));
+        Task task = new Task("Task 1", "Description Task 1", Status.NEW, LocalDateTime.now().plusMinutes(15), Duration.ZERO);
         manager.addNewTask(task);
 
         String expectedContent = "1,TASK,Task 1,NEW,Description Task 1";
@@ -75,7 +76,7 @@ class FileBackedTaskManagerTest {
         Epic epic = new Epic("Epic  1", "Description Epic 1", Status.NEW);
         manager.addNewEpic(epic);
 
-        SubTask subTask = new SubTask("SubTask 1", "Description SubTask 1", Status.NEW, 1, LocalDateTime.now().plusMinutes(15));
+        SubTask subTask = new SubTask("SubTask 1", "Description SubTask 1", 1, Status.NEW, 1, LocalDateTime.now().plusMinutes(15), Duration.ZERO);
         subTask.setStatus(Status.IN_PROGRESS);
         manager.addNewSubTask(subTask);
 
