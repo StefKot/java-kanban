@@ -1,12 +1,12 @@
-package HttpServer.handlers;
+package api.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import manager.TaskManager;
 
 import java.io.IOException;
 
-public class PriorityTasksHandler extends BaseHandler {
-    public PriorityTasksHandler(TaskManager taskManager) {
+public class HistoryHandler extends BaseHandler {
+    public HistoryHandler(TaskManager taskManager) {
         super(taskManager);
     }
 
@@ -22,7 +22,7 @@ public class PriorityTasksHandler extends BaseHandler {
     }
 
     private void handleGet(HttpExchange httpExchange) throws IOException {
-        response = gson.toJson(taskManager.getPriorityTasks());
+        response = gson.toJson(taskManager.getHistory());
         sendText(httpExchange, response, 200);
     }
 }

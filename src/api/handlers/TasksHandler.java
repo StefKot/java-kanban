@@ -1,4 +1,4 @@
-package HttpServer.handlers;
+package api.handlers;
 
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;

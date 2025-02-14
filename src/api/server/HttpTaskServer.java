@@ -1,6 +1,6 @@
-package HttpServer.server;
+package api.server;
 
-import HttpServer.handlers.*;
+import api.handlers.*;
 import com.sun.net.httpserver.HttpServer;
 import manager.Managers;
 

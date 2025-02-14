@@ -7,8 +7,8 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.time.Duration;
 
-import HttpServer.adapters.LocalDateTimeAdapter;
-import HttpServer.adapters.DurationAdapter;
+import api.adapters.LocalDateTimeAdapter;
+import api.adapters.DurationAdapter;
 
 public class Managers {
     public static TaskManager getDefault() {
